@@ -1,0 +1,24 @@
+import pandas as pd
+import joblib
+model = joblib.load('trained_model.pkl')
+dataset = pd.read_csv('dataset.csv')
+irrelevant_columns = ['customerID', 'Churn']
+dataset = dataset.drop(columns=irrelevant_columns, errors='ignore')
+categorical_columns = ['gender', 'Partner', 'Dependents', 'PhoneService', 'MultipleLines', 'InternetService',
+                       'OnlineSecurity', 'OnlineBackup', 'DeviceProtection', 'TechSupport', 'StreamingTV',
+                       'StreamingMovies', 'Contract', 'PaperlessBilling', 'PaymentMethod']
+dataset = pd.get_dummies(dataset, columns=categorical_columns, drop_first=True)
+expected_features = model.feature_names_in_
+sample_row = dataset.iloc[0]
+sample_input = pd.DataFrame([sample_row], columns=expected_features).fillna(0)
+try:
+    prediction = model.predict(sample_input)
+    probability = model.predict_proba(sample_input)
+except ValueError as e:
+    print(f"Error during prediction: {e}")
+    exit()
+
+label_map = {0: "No Churn", 1: "Churn"}
+prediction_label = label_map[int(prediction[0])]
+print(f"Prediction: {prediction_label}")
+print(f"Probability - No Churn: {round(probability[0][0], 4)}, Churn: {round(probability[0][1], 4)}")
