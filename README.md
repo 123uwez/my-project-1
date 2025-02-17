@@ -1,1 +1,1 @@
-in this project we have created a projrct named "cognitive customer insight with customer Ai"
+# 'this is the code of the project named 'cognitive customer analysis using the watson AI'
